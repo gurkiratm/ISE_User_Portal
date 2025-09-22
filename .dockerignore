@@ -1,0 +1,7 @@
+*.py
+!ISE_user_portal.py
+venv/
+Dockerfile
+instance/portal_users.db
+*.zip
+.git*

@@ -1,0 +1,5 @@
+ciscoisesdk
+Flask
+Flask-BasicAuth
+Flask-SQLAlchemy
+dotenv

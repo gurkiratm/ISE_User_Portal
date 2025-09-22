@@ -1,0 +1,5 @@
+.env
+venv/
+instance/portal_users.db
+*.zip
+__pycache__/

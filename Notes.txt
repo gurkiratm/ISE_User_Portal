@@ -1,0 +1,42 @@
+# To create the DB, run once in Python shell:
+# from ISE_user_portal import app, db, PortalUser
+# with app.app_context():
+#     db.create_all()
+#     user = PortalUser(username='gurkirat', password='gurkirat', ise_username='gurkirat')
+#     db.session.add(user)
+#     db.session.commit()
+
+The error `UNIQUE constraint failed: portal_user.username` means a user with the username `gurkirat` **already exists** in your database.
+
+**How to fix:**
+
+1. **Check existing users:**
+   ```python
+with app.app_context():
+   users = PortalUser.query.all()
+   for u in users:
+       print(u.username, u.ise_username)
+   ```
+
+2. **Delete or update the user if needed:**
+   ```python
+   with app.app_context():
+       user = PortalUser.query.filter_by(username='gurkirat').first()
+       if user:
+           db.session.delete(user)
+           db.session.commit()
+   ```
+
+3. **Add the user again if needed:**
+   ```python
+   with app.app_context():
+       user = PortalUser(username='gurkirat', password=generate_password_hash('password'), ise_username='gurkirat')
+       db.session.add(user)
+       db.session.commit()
+   ```
+
+---
+
+**Summary:**  
+You cannot add duplicate usernames.  
+Check, delete, or update users as needed before adding new ones.

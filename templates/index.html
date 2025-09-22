@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>ISE User Portal</title>
+
+    <!-- Bootstrap CSS -->
+    <link href="{{ url_for('static', filename='bootstrap/css/bootstrap.min.css') }}" rel="stylesheet" />
+
+    <!-- Bootstrap Icons -->
+    <!-- <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet" /> -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='bootstrap/icons/bootstrap-icons.css') }}">
+
+
+    <style>
+        /* Button hover animation */
+        .btn {
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+        }
+
+        .btn:hover,
+        .btn:focus {
+            transform: scale(1.05);
+            box-shadow: 0 0 8px rgba(0, 123, 255, 0.5);
+        }
+
+        /* Smooth fade-in for flash messages */
+        .alert {
+            opacity: 0;
+            animation: fadeInAlert 0.6s forwards;
+        }
+
+        @keyframes fadeInAlert {
+            to {
+                opacity: 1;
+            }
+        }
+
+        /* Password checklist animation */
+        .list-group-numbered li {
+            transition: color 0.3s ease;
+        }
+
+        /* Card fade-in on load */
+        .fade-in {
+            opacity: 0;
+            animation: fadeInCard 0.7s forwards;
+        }
+
+        @keyframes fadeInCard {
+            to {
+                opacity: 1;
+            }
+        }
+
+        /* Navbar dropdown smooth fade */
+        .dropdown-menu {
+            transition: opacity 0.3s ease, visibility 0.3s ease;
+        }
+    </style>
+</head>
+
+<body class="bg-light">
+
+    <!-- Navbar with menu and admin dropdown -->
+    <nav class="navbar navbar-expand-lg navbar-dark bg-primary shadow-sm">
+        <div class="container-fluid">
+            <a class="navbar-brand" href="#">
+                <i class="bi bi-shield-lock"></i> ISE User Portal
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"
+                aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto align-items-lg-center">
+                    <span class="navbar-text text-white me-3">
+                        Welcome, <strong>{{ session.portal_username }}</strong>
+                    </span>
+                    {% if session.portal_username in admin_user %}
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle text-white btn btn-sm me-2" href="#" id="navbarAdmin"
+                            role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                            <i class="bi bi-gear-fill"></i>
+                        </a>
+                        <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarAdmin">
+                            <li><a class="dropdown-item btn" href="{{ url_for('register') }}"><i
+                                        class="bi bi-person-plus"></i> Register User</a></li>
+                            <li><a class="dropdown-item btn" href="{{ url_for('remove_user') }}"><i
+                                        class="bi bi-person-dash"></i> Remove User</a></li>
+                            <li><a class="dropdown-item btn" href="{{ url_for('logout') }}"><i
+                                        class="bi bi-box-arrow-right"></i>
+                                    Logout</a></li>
+                        </ul>
+                    </li>
+                    {% else %}
+                    <li class="nav-item">
+                        <a class="btn btn-outline-light btn-sm" style="background-color: #1370bd; color: white;"
+                            href="{{ url_for('logout') }}">
+                            <i class="bi bi-box-arrow-right"></i> Logout
+                        </a>
+                    </li>
+                    {% endif %}
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container my-4">
+        <!-- Flash Messages -->
+        {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+        <div class="row">
+            <div class="col-lg-8 offset-lg-2">
+                {% for category, message in messages %}
+                <div class="alert alert-{{ 'danger' if category == 'danger' else 'success' }} alert-dismissible fade show shadow-sm"
+                    role="alert">
+                    {{ message }}
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+        {% endif %}
+        {% endwith %}
+
+        {% if user %}
+        <!-- User Details Card -->
+        <div class="card mb-4 shadow-sm fade-in">
+            <div class="card-header bg-info text-white">
+                <h4 class="mb-0"><i class="bi bi-person-circle"></i> Your ISE Details</h4>
+            </div>
+            <ul class="list-group list-group-flush">
+                <li class="list-group-item"><strong>Username:</strong> {{ user.name }}</li>
+                <li class="list-group-item"><strong>Enabled:</strong> {{ user.enabled }}</li>
+                <li class="list-group-item"><strong>First Name:</strong> {{ user.firstName }}</li>
+                <li class="list-group-item">
+                    <strong>Last Name:</strong>
+                    <!--
+          {% if not user.lastName %}
+            <em class="text-muted">Not Provided</em>
+          {% else %}
+          -->
+                    {{ user.lastName }}
+                    <!--
+          {% endif %}
+          -->
+                </li>
+                <li class="list-group-item"><strong>Email:</strong> {{ user.email }}</li>
+                <li class="list-group-item"><strong>Description:</strong> {{ user.description }}</li>
+                <li class="list-group-item"><strong>Last Modified:</strong> {{ user.dateModified }}</li>
+                <li class="list-group-item"><strong>Expiry Enabled:</strong> {{ user.expiryDateEnabled }}</li>
+                <li class="list-group-item"><strong>Expiry Date:</strong> {{ user.expiryDate }}</li>
+            </ul>
+        </div>
+
+        <!-- Change Password Card -->
+        <div class="card shadow-sm fade-in">
+            <div class="card-header bg-secondary text-white">
+                <h5 class="mb-0"><i class="bi bi-key"></i> Change Your ISE Password</h5>
+            </div>
+            <div class="card-body">
+                <form method="post" action="{{ url_for('change_password') }}">
+                    <!-- CSRF token removed as requested -->
+                    <div class="mb-3">
+                        <label for="new_password" class="form-label">New Password:</label>
+                        <input type="password" class="form-control" id="new_password" name="new_password" required
+                            aria-describedby="passwordHelp" />
+                    </div>
+                    <button type="submit" class="btn btn-success">
+                        <i class="bi bi-shield-check"></i> Change Password
+                    </button>
+                </form>
+
+                <!-- Password Policy -->
+                <div class="mt-4">
+                    <h6><i class="bi bi-info-circle"></i> Password Requirements</h6>
+                    <ul class="list-group list-group-numbered">
+                        <li class="list-group-item">Different from previous <strong>5</strong> passwords</li>
+                        <li class="list-group-item">No reuse within <strong>15 days</strong></li>
+                        <li class="list-group-item">
+                            Must not contain:
+                            <ul>
+                                <li>Username or reversed username</li>
+                                <li>Word "cisco" or reversed</li>
+                                <li>4+ repeated identical characters</li>
+                                <li>Dictionary words</li>
+                            </ul>
+                        </li>
+                        <li class="list-group-item">
+                            Must include at least:
+                            <ul>
+                                <li>1 lowercase letter</li>
+                                <li>1 uppercase letter</li>
+                                <li>1 number</li>
+                                <li>1 special character</li>
+                            </ul>
+                        </li>
+                        <li class="list-group-item">At least <strong>3 character</strong> difference from last password
+                        </li>
+                    </ul>
+                    <small id="passwordHelp" class="text-muted">
+                        If requirements are not met, your password will be rejected by ISE.
+                    </small>
+                </div>
+            </div>
+        </div>
+        {% else %}
+        <!-- No Data -->
+        <div class="alert alert-warning mt-4 shadow-sm fade-in" role="alert">
+            <i class="bi bi-exclamation-triangle-fill"></i> No ISE user data found.
+        </div>
+        {% endif %}
+    </div>
+
+    <!-- Bootstrap Bundle JS (popper included) -->
+    <script src="{{ url_for('static', filename='bootstrap/js/bootstrap.bundle.min.js') }}"></script>
+</body>
+
+</html>
