@@ -6,7 +6,6 @@ For ISE internal users to view account details and update their own password.
 
 Small Python/Flask web application that provides a simple web UI for internal ISE users to view account details and change passwords. The app uses the Cisco ISE SDK (`ciscoisesdk`) to call Identity Services Engine APIs, stores portal users in a local SQLite DB, and includes Docker support for containerized deployment.
 
----
 ## Working snapshots
 
 ***Login Page***
@@ -22,8 +21,7 @@ Small Python/Flask web application that provides a simple web UI for internal IS
 <img width="436" height="329" alt="{04F8A12B-D24D-4F91-95DA-B0A5B2EB32CC}" src="https://github.com/user-attachments/assets/cc78df56-450a-4fb5-aba5-73e3213c77c6" />
 <img width="881" height="150" alt="{9ABE16F2-88AE-432B-BC1E-1EBC4DBDE202}" src="https://github.com/user-attachments/assets/c78e13be-4138-43d5-ba6c-98828b942585" />
 
-
-
+---
 ## Key details 
 
 - App framework: Flask
