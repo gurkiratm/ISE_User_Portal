@@ -7,6 +7,9 @@
 #                with app.app_context(): db.create_all()"
 # fi
 
+mkdir -p /app/instance
+chmod 777 /app/instance
+
 if [ ! -f /app/instance/portal_users.db ]; then
     echo "Database not found. Initializing..."
     python -c "
