@@ -70,7 +70,7 @@ pipeline {
                         #git config list
 
                         git add manifests/deploy-ise.yaml
-                        git commit -m "Jenkins build ${BUILD_NUMBER}: Updating ISE User Portal deployment to image tag ${IMAGE_TAG}"
+                        git commit -m "Jenkins build ${BUILD_NUMBER}: Updating ISE User Portal deployment to image tag ${IMAGE_TAG} [skip ci]"
                         git push https://${GIT_USERNAME}:${GIT_PASSWORD}@${MANIFESTS_REPO_PATH} ${MANIFEST_BRANCH}
                         '''
                     }
