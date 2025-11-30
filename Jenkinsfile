@@ -1,5 +1,5 @@
 pipeline {
-  
+
     agent {
         node {
             label 'fedora'
@@ -55,7 +55,7 @@ pipeline {
                     )]) {
                         sh '''
                         cp templates/deploy-template-ise.yaml manifests/deploy-ise.yaml
-                        sed -i 's|__REGISTRY-URL__/__IMAGE-NAME__:__IMAGE-TAG__|${REGISTRY_URL}/${IMAGE_NAME}:${IMAGE_TAG}|' manifests/deploy-ise.yaml
+                        sed -i "s|__REGISTRY-URL__/__IMAGE-NAME__:__IMAGE-TAG__|${REGISTRY_URL}/${IMAGE_NAME}:${IMAGE_TAG}|" manifests/deploy-ise.yaml
                         cat -n manifests/deploy-ise.yaml
                         #sed -i "s|image: ${REGISTRY_URL}/${IMAGE_NAME}:.*|image: ${REGISTRY_URL}/${IMAGE_NAME}:${BUILD_NUMBER}|" manifests/deploy-ise.yaml
                         
@@ -65,7 +65,7 @@ pipeline {
                         git config list
 
                         git add manifests/deploy-ise.yaml
-                        git commit -m "Update ISE User Portal deployment to image tag ${IMAGE_TAG}"
+                        git commit -m "Jenkins Updating ISE User Portal deployment to image tag ${IMAGE_TAG}"
                         git push https://${GIT_USERNAME}:${GIT_PASSWORD}@${MANIFESTS_REPO_PATH} ${MANIFEST_BRANCH}
                         '''
                     }
