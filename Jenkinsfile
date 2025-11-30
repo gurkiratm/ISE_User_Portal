@@ -56,6 +56,7 @@ pipeline {
                     withCredentials([usernamePassword(credentialsId: "${CREDS_ID}",
                         passwordVariable: 'GIT_PASSWORD',
                         usernameVariable: 'GIT_USERNAME'
+                        poll: false
                     )]) {
                         sh '''
                         cp templates/deploy-template-ise.yaml manifests/deploy-ise.yaml
