@@ -43,10 +43,28 @@ pipeline {
                 '''
             }
         }
-        stage('checkout K8s git') {
+        // stage('checkout K8s git') {
+        //     steps {
+        //         echo 'Cloning K8s configuration repository...'
+        //         git credentialsId: "${CREDS_ID}", url: "${MANIFESTS_REPO}", branch: "${MANIFEST_BRANCH}"
+        //     }
+        // }
+        stage('checkout K8s manifest repo') {
             steps {
-                echo 'Cloning K8s configuration repository...'
-                git credentialsId: "${CREDS_ID}", url: "${MANIFESTS_REPO}", branch: "${MANIFEST_BRANCH}", poll: false
+                echo 'Cloning K8s configuration repository (Polling Explicitly Disabled)...'
+                // Use the full checkout step for granular control
+                checkout([
+                    $class: 'GitSCM', 
+                    branches: [[name: "${MANIFEST_BRANCH}"]], 
+                    userRemoteConfigs: [[
+                        credentialsId: "${CREDS_ID}", 
+                        url: "${MANIFESTS_REPO}"
+                    ]],
+                    extensions: [
+                          [$class: 'PollingDisabled'], 
+                          [$class: 'ChangelogExclusion']
+                      ]
+                ])
             }
         }
         stage('Update K8s deployment and push changes') {
@@ -55,8 +73,7 @@ pipeline {
                 script {
                     withCredentials([usernamePassword(credentialsId: "${CREDS_ID}",
                         passwordVariable: 'GIT_PASSWORD',
-                        usernameVariable: 'GIT_USERNAME',
-                        poll: false
+                        usernameVariable: 'GIT_USERNAME'
                     )]) {
                         sh '''
                         cp templates/deploy-template-ise.yaml manifests/deploy-ise.yaml
@@ -70,7 +87,7 @@ pipeline {
                         #git config list
 
                         git add manifests/deploy-ise.yaml
-                        git commit -m "Jenkins build ${BUILD_NUMBER}: Updating ISE User Portal deployment to image tag ${IMAGE_TAG} [skip ci]"
+                        git commit -m "Jenkins build ${BUILD_NUMBER}: Updating ISE User Portal deployment to image tag ${IMAGE_TAG}"
                         git push https://${GIT_USERNAME}:${GIT_PASSWORD}@${MANIFESTS_REPO_PATH} ${MANIFEST_BRANCH}
                         '''
                     }
