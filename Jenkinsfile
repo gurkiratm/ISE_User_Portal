@@ -1,5 +1,10 @@
 pipeline {
-    agent any
+  
+    agent {
+        node {
+            label 'fedora'
+        }
+    }
     environment {
         REGISTRY_URL      = "10.88.19.170:5000"
         IMAGE_NAME        = "ise_user_portal"
