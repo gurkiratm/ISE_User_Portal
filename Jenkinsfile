@@ -43,7 +43,7 @@ pipeline {
                 '''
             }
         }
-        stage('checkout K8s git') {
+        stage('checkout K8s manifest repo') {
             steps {
                 echo 'Cloning K8s configuration repository...'
                 // git credentialsId: "${CREDS_ID}", url: "${MANIFESTS_REPO}", branch: "${MANIFEST_BRANCH}"
@@ -53,7 +53,7 @@ pipeline {
                         usernameVariable: 'GIT_USERNAME'
                     )]) {
                         sh '''
-                        git clone -b ${MANIFEST_BRANCH} https://${GIT_USERNAME}:${GIT_PASSWORD}@${MANIFESTS_REPO_PATH} manifests
+                        git clone -b ${MANIFEST_BRANCH} https://${GIT_USERNAME}:${GIT_PASSWORD}@${MANIFESTS_REPO_PATH}
                         '''
                     }
                 }
