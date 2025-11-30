@@ -9,6 +9,8 @@ pipeline {
         REGISTRY_URL      = "10.88.19.170:5000"
         IMAGE_NAME        = "ise_user_portal"
         IMAGE_TAG         = "${BUILD_NUMBER}"
+        SOURCE_REPO       = "https://github.com/gurkiratm/ISE_User_Portal.git"
+        SOURCE_BRANCH     = "main"
         MANIFESTS_REPO_PATH    = "github.com/gurkiratm/cicd-ISE-manifests.git"
         MANIFESTS_REPO    = "https://${MANIFESTS_REPO_PATH}"
         MANIFEST_BRANCH    = "main"
@@ -19,7 +21,10 @@ pipeline {
     stages {
         stage('checkout') {
             steps {
-                checkout scm
+                echo 'Checking out source code...'
+                //checkout scm
+                git credentialsId: '${CREDS_ID}',
+                    url: '${SOURCE_REPO}', branch: '${SOURCE_BRANCH}'
             }
         }
         stage('Build Docker image') {
@@ -60,9 +65,9 @@ pipeline {
                         #sed -i "s|image: ${REGISTRY_URL}/${IMAGE_NAME}:.*|image: ${REGISTRY_URL}/${IMAGE_NAME}:${BUILD_NUMBER}|" manifests/deploy-ise.yaml
                         
                         git config list
-                        git config user.email "gurkiratmall207@gmail.com"
-                        git config user.name "gurkiratm"
-                        git config list
+                        #git config user.email "gurkiratmall207@gmail.com"
+                        #git config user.name "gurkiratm"
+                        #git config list
 
                         git add manifests/deploy-ise.yaml
                         git commit -m "Jenkins build ${BUILD_NUMBER}: Updating ISE User Portal deployment to image tag ${IMAGE_TAG}"
