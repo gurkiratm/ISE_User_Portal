@@ -21,6 +21,7 @@ pipeline {
             steps {
                 echo 'Building Docker image...'
                 sh '''
+                hostname
                 docker build -t ${REGISTRY_URL}/${IMAGE_NAME}:${IMAGE_TAG} .
                 '''
             }
