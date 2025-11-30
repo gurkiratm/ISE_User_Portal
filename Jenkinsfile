@@ -23,8 +23,7 @@ pipeline {
             steps {
                 echo 'Checking out source code...'
                 //checkout scm
-                git credentialsId: '${CREDS_ID}',
-                    url: '${SOURCE_REPO}', branch: '${SOURCE_BRANCH}'
+                git credentialsId: "${CREDS_ID}", url: "${SOURCE_REPO}", branch: "${SOURCE_BRANCH}"
             }
         }
         stage('Build Docker image') {
