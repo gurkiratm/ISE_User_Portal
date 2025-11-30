@@ -53,7 +53,7 @@ pipeline {
                         usernameVariable: 'GIT_USERNAME'
                     )]) {
                         sh '''
-                        git clone -b ${MANIFEST_BRANCH} https://${GIT_USERNAME}:${GIT_PASSWORD}@${MANIFESTS_REPO_PATH}
+                        git clone -b ${MANIFEST_BRANCH} https://${GIT_USERNAME}:${GIT_PASSWORD}@${MANIFESTS_REPO_PATH} manifests
                         '''
                     }
                 }
@@ -68,6 +68,7 @@ pipeline {
                         usernameVariable: 'GIT_USERNAME'
                     )]) {
                         sh '''
+                        cd manifests-repo
                         cp templates/deploy-template-ise.yaml manifests/deploy-ise.yaml
                         sed -i "s|__REGISTRY-URL__/__IMAGE-NAME__:__IMAGE-TAG__|${REGISTRY_URL}/${IMAGE_NAME}:${IMAGE_TAG}|" manifests/deploy-ise.yaml
                         cat -n manifests/deploy-ise.yaml
