@@ -43,28 +43,20 @@ pipeline {
                 '''
             }
         }
-        // stage('checkout K8s git') {
-        //     steps {
-        //         echo 'Cloning K8s configuration repository...'
-        //         git credentialsId: "${CREDS_ID}", url: "${MANIFESTS_REPO}", branch: "${MANIFEST_BRANCH}"
-        //     }
-        // }
-        stage('checkout K8s manifest repo') {
+        stage('checkout K8s git') {
             steps {
-                echo 'Cloning K8s configuration repository (Polling Explicitly Disabled)...'
-                // Use the full checkout step for granular control
-                checkout([
-                    $class: 'GitSCM', 
-                    branches: [[name: "${MANIFEST_BRANCH}"]], 
-                    userRemoteConfigs: [[
-                        credentialsId: "${CREDS_ID}", 
-                        url: "${MANIFESTS_REPO}"
-                    ]],
-                    extensions: [
-                          [$class: 'PollingDisabled'], 
-                          [$class: 'ChangelogExclusion']
-                      ]
-                ])
+                echo 'Cloning K8s configuration repository...'
+                // git credentialsId: "${CREDS_ID}", url: "${MANIFESTS_REPO}", branch: "${MANIFEST_BRANCH}"
+                script{
+                    withCredentials([usernamePassword(credentialsId: "${CREDS_ID}",
+                        passwordVariable: 'GIT_PASSWORD',
+                        usernameVariable: 'GIT_USERNAME'
+                    )]) {
+                        sh '''
+                        git clone -b ${MANIFEST_BRANCH} https://${GIT_USERNAME}:${GIT_PASSWORD}@${MANIFESTS_REPO_PATH} manifests
+                        '''
+                    }
+                }
             }
         }
         stage('Update K8s deployment and push changes') {
