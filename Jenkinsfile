@@ -53,6 +53,7 @@ pipeline {
                         usernameVariable: 'GIT_USERNAME'
                     )]) {
                         sh '''
+                        rm -rf manifests-repo
                         git clone -b ${MANIFEST_BRANCH} https://${GIT_USERNAME}:${GIT_PASSWORD}@${MANIFESTS_REPO_PATH} manifests-repo
                         ls -lR manifests-repo/
                         '''
