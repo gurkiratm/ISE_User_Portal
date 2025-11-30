@@ -22,8 +22,8 @@ pipeline {
         stage('checkout') {
             steps {
                 echo 'Checking out source code...'
-                //checkout scm
-                git credentialsId: "${CREDS_ID}", url: "${SOURCE_REPO}", branch: "${SOURCE_BRANCH}"
+                checkout scm
+                // git credentialsId: "${CREDS_ID}", url: "${SOURCE_REPO}", branch: "${SOURCE_BRANCH}"
             }
         }
         stage('Build Docker image') {
@@ -54,6 +54,7 @@ pipeline {
                     )]) {
                         sh '''
                         git clone -b ${MANIFEST_BRANCH} https://${GIT_USERNAME}:${GIT_PASSWORD}@${MANIFESTS_REPO_PATH} manifests-repo
+                        ls -lR manifests-repo/
                         '''
                     }
                 }
