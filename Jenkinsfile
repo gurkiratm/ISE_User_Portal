@@ -1,4 +1,4 @@
-pipelines {
+pipeline {
     agent any
     environment {
         REGISTRY_URL      = "10.88.19.170:5000"
@@ -13,9 +13,9 @@ pipelines {
 
     stages {
         stage('checkout') {
-          steps{
-            checkout scm
-          }
+            steps {
+                checkout scm
+            }
         }
         stage('Build Docker image') {
             steps {
@@ -33,37 +33,36 @@ pipelines {
                 '''
             }
         }
-
         stage('checkout K8s git') {
             steps {
-              echo 'Cloning K8s configuration repository...'
-              git credentialsId: "${CREDS_ID}", url: "${MANIFESTS_REPO}", branch: "${MANIFEST_BRANCH}"
+                echo 'Cloning K8s configuration repository...'
+                git credentialsId: "${CREDS_ID}", url: "${MANIFESTS_REPO}", branch: "${MANIFEST_BRANCH}"
             }
         }
         stage('Update K8s deployment and push changes') {
             steps {
                 echo 'Updating K8s deployment file...'
-                script{
-                  withCredentials([usernamePassword(credentialsId: "${CREDS_ID}",
-                  passwordVariable: 'GIT_PASSWORD',
-                  usernameVariable: 'GIT_USERNAME'
-                  )]) {
+                script {
+                    withCredentials([usernamePassword(credentialsId: "${CREDS_ID}",
+                        passwordVariable: 'GIT_PASSWORD',
+                        usernameVariable: 'GIT_USERNAME'
+                    )]) {
+                        sh '''
+                        cp templates/deploy-template-ise.yaml manifests/deploy-ise.yaml
+                        sed -i 's|__REGISTRY-URL__/__IMAGE-NAME__:__IMAGE-TAG__|${REGISTRY_URL}/${IMAGE_NAME}:${IMAGE_TAG}|' manifests/deploy-ise.yaml
+                        cat -n manifests/deploy-ise.yaml
+                        #sed -i "s|image: ${REGISTRY_URL}/${IMAGE_NAME}:.*|image: ${REGISTRY_URL}/${IMAGE_NAME}:${BUILD_NUMBER}|" manifests/deploy-ise.yaml
+                        
+                        git config list
+                        git config user.email "gurkiratmall207@gmail.com"
+                        git config user.name "gurkiratm"
+                        git config list
 
-                sh '''
-                cp templates/deploy-template-ise.yaml manifests/deploy-ise.yaml
-                sed -i 's|__REGISTRY-URL__/__IMAGE-NAME__:__IMAGE-TAG__|${REGISTRY_URL}/${IMAGE_NAME}:${IMAGE_TAG}|' manifests/deploy-ise.yaml
-                #sed -i "s|image: ${REGISTRY_URL}/${IMAGE_NAME}:.*|image: ${REGISTRY_URL}/${IMAGE_NAME}:${BUILD_NUMBER}|" manifests/deploy-ise.yaml
-                cat -n manifests/deploy-ise.yaml
-
-                git config list 
-                git config user.email "gurkiratmall207@gmail.com"
-                git config user.name "gurkiratm"
-                git config list 
-
-                git add manifests/deploy-ise.yaml
-                git commit -m "Update ISE User Portal deployment to image tag ${IMAGE_TAG}"
-                git push https://${GIT_USERNAME}:${GIT_PASSWORD}@${MANIFESTS_REPO_PATH} ${MANIFEST_BRANCH}
-                '''
+                        git add manifests/deploy-ise.yaml
+                        git commit -m "Update ISE User Portal deployment to image tag ${IMAGE_TAG}"
+                        git push https://${GIT_USERNAME}:${GIT_PASSWORD}@${MANIFESTS_REPO_PATH} ${MANIFEST_BRANCH}
+                        '''
+                    }
                 }
             }
         }
