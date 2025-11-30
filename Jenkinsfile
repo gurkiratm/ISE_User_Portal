@@ -46,7 +46,7 @@ pipeline {
         stage('checkout K8s git') {
             steps {
                 echo 'Cloning K8s configuration repository...'
-                git credentialsId: "${CREDS_ID}", url: "${MANIFESTS_REPO}", branch: "${MANIFEST_BRANCH}"
+                git credentialsId: "${CREDS_ID}", url: "${MANIFESTS_REPO}", branch: "${MANIFEST_BRANCH}", poll: false
             }
         }
         stage('Update K8s deployment and push changes') {
