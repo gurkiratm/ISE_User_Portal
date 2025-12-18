@@ -28,7 +28,6 @@ with app.app_context():
 "
 fi
 
-
 # Start the app
 # exec flask run --host=0.0.0.0 --port=5001
 python3 /app/ISE_user_portal.py
